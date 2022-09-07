@@ -114,12 +114,4 @@ fn main() {
         vec![1, 2, 3, 4],
         vec![third, fourth, fifth, sixth, seventh],
     );
-
-    println!("{}", test_node);
-    // if let Some(encoded) = test_node.encode() {
-    //     println!("{:#?}", encoded);
-    //     if let Some(decoded) = Node::<u32>::decode(&encoded) {
-    //         println!("DECODED: {}", decoded);
-    //     }
-    // }
 }
