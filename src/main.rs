@@ -1,13 +1,23 @@
 #![allow(unused_variables, dead_code, unused_imports)]
 
+use derivative::Derivative;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Debug, Display};
 use std::sync::{Arc, Mutex, RwLock};
 
-#[derive(Serialize, Deserialize, Clone, Copy, Debug)]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, Derivative)]
+#[derivative(Default)]
 struct ItemPtr {
+    #[derivative(Default(value = "-1"))]
     page_no: i32,
+    #[derivative(Default(value = "0"))]
     offset: usize,
+}
+
+impl ItemPtr {
+    pub fn new(page_no: i32, offset: usize) -> Self {
+        ItemPtr { page_no, offset }
+    }
 }
 
 impl Display for ItemPtr {
@@ -33,7 +43,7 @@ struct Node<T> {
 
 impl<'a, T> Node<T>
 where
-    T: Deserialize<'a> + Serialize,
+    T: Deserialize<'a> + Serialize + Ord + Clone + Copy,
 {
     pub fn encode(self) -> Option<Vec<u8>> {
         let item = bincode::serialize(&self);
@@ -49,6 +59,25 @@ where
         match page {
             Ok(page) => Some(page),
             Err(_) => None,
+        }
+    }
+
+    pub fn new(
+        order: u32,
+        loc: ItemPtr,
+        link: ItemPtr,
+        keys: Vec<T>,
+        children: Vec<ItemPtr>,
+    ) -> Self {
+        let high_key = *keys.iter().max().unwrap();
+        Node {
+            leaf: true,
+            order,
+            loc,
+            link,
+            keys,
+            children,
+            high_key,
         }
     }
 }
@@ -69,39 +98,20 @@ where
 type Page = Arc<Mutex<[u8; 512]>>;
 
 fn main() {
-    let first = ItemPtr {
-        page_no: 1,
-        offset: 2,
-    };
+    let first = ItemPtr::new(1, 2);
+    let second = ItemPtr::new(1, 2);
+    let third = ItemPtr::new(1, 2);
+    let fourth = ItemPtr::new(1, 2);
+    let fifth = ItemPtr::new(1, 2);
+    let sixth = ItemPtr::new(1, 2);
+    let seventh = ItemPtr::new(1, 2);
+    let eighth = ItemPtr::new(1, 2);
 
-    let second = ItemPtr {
-        page_no: 2,
-        offset: 3,
-    };
-
-    let third = ItemPtr {
-        page_no: 3,
-        offset: 4,
-    };
-
-    println!("{} \n{}", first, second);
-
-    let test_node: Node<u32> = Node {
-        leaf: false,
-        order: 2,
-        loc: first,
-        link: second,
-        high_key: 3,
-        keys: vec![1, 2, 3],
-        children: vec![third],
-    };
-
-    println!("{}", test_node);
-
-    if let Some(encoded) = test_node.encode() {
-        println!("{:#?}", encoded);
-        if let Some(decoded) = Node::<u32>::decode(&encoded) {
-            println!("DECODED: {}", decoded);
-        }
-    }
+    let test_node = Node::new(
+        2,
+        first,
+        second,
+        vec![1, 2, 3, 4],
+        vec![third, fourth, fifth, sixth, seventh],
+    );
 }
