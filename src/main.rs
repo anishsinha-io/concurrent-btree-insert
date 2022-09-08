@@ -79,6 +79,13 @@ where
             high_key,
         }
     }
+
+    pub fn into_buffer(self) -> [u8; 512] {
+        let bytes: Vec<u8> = self.encode().unwrap();
+        let mut node_buf = [0u8; 512];
+        node_buf[..std::mem::size_of_val(&*bytes)].copy_from_slice(&bytes);
+        node_buf
+    }
 }
 
 impl<T> Display for Node<T>
@@ -113,4 +120,13 @@ fn main() {
         vec![1, 2, 3, 4],
         vec![third, fourth, fifth, sixth, seventh],
     );
+
+    println!("{}", std::mem::size_of_val(&first));
+    println!("{}", std::mem::size_of_val(&test_node));
+
+    let raw: [u8; 512] = test_node.into_buffer();
+    println!("{:#?}", raw);
+    let raw_bytes: Vec<u8> = Vec::from(raw);
+    let raw_decoded = Node::<u32>::decode(&raw_bytes).unwrap();
+    println!("RAW DECODED: {}", raw_decoded);
 }
