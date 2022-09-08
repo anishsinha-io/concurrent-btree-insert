@@ -1,4 +1,5 @@
 pub mod encoding;
+pub mod fsutil;
 pub mod node;
 pub mod ptr;
 
