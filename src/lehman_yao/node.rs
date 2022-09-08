@@ -2,8 +2,8 @@ use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Debug, Display};
 
-use crate::buffers::encoding;
-use crate::buffers::ptr::ItemPtr;
+use crate::lehman_yao::encoding;
+use crate::lehman_yao::ptr::ItemPtr;
 
 ///
 /// Node represents how Lehman and Yao tree nodes are represented internally. Nodes are parameterized and can accept generic keys types.

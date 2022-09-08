@@ -1,3 +1,4 @@
+pub mod alg;
 ///
 /// This module contains definitions and methods to work with thread-safe buffer pool objects
 ///

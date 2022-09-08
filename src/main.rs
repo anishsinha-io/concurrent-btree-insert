@@ -14,10 +14,10 @@
 #![allow(unused_variables, dead_code, unused_imports)]
 #![warn(missing_docs)]
 
-use buffers::node::Node;
-use buffers::ptr::ItemPtr;
+use lehman_yao::node::Node;
+use lehman_yao::ptr::ItemPtr;
 
-mod buffers;
+mod lehman_yao;
 
 fn main() {
     let first = ItemPtr::new(1);
