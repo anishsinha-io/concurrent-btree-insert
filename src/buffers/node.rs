@@ -21,19 +21,11 @@ where
     T: DeserializeOwned + Serialize + Ord + Clone + Copy,
 {
     pub fn encode(self) -> Option<Vec<u8>> {
-        let item = bincode::serialize(&self);
-        match item {
-            Ok(item) => Some(item),
-            Err(_) => None,
-        }
+        encoding::bytes::encode(&self)
     }
 
     pub fn decode(bytes: &Vec<u8>) -> Option<Self> {
-        let page = bincode::deserialize(&bytes[..]);
-        match page {
-            Ok(page) => Some(page),
-            Err(_) => None,
-        }
+        encoding::bytes::decode(bytes.to_vec())
     }
 
     pub fn new(
