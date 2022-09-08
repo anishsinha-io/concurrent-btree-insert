@@ -54,7 +54,6 @@ where
     }
 
     pub fn decode(bytes: &'a Vec<u8>) -> Option<Self> {
-        let cloned: Vec<u8> = bytes.clone();
         let page = bincode::deserialize(&bytes[..]);
         match page {
             Ok(page) => Some(page),
