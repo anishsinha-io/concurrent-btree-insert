@@ -32,6 +32,7 @@ fn main() {
     {
         let mut test = vec![eighth, seventh, sixth, fifth, fourth, third, second, first];
         println!("{:#?}", test);
+        let a: i32 = 1;
         test.sort();
         println!("{:#?}", test);
     }

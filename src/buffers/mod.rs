@@ -4,8 +4,10 @@
 pub mod encoding;
 pub mod fsutil;
 pub mod node;
+pub mod page_table;
 pub mod ptr;
 
+use rayon::{ThreadPool, ThreadPoolBuilder};
 use std::fmt::Display;
 use std::sync::{Arc, Mutex, RwLock};
 
@@ -54,6 +56,16 @@ impl PartialEq for BufferPoolFrame {
     fn eq(&self, other: &Self) -> bool {
         self.page_no == other.page_no
     }
+}
+
+///
+/// Create a new thread pool with a given number of threads
+///
+fn thread_pool(num_threads: usize) -> ThreadPool {
+    ThreadPoolBuilder::new()
+        .num_threads(num_threads)
+        .build()
+        .unwrap()
 }
 
 ///
