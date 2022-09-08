@@ -1,7 +1,9 @@
 #![allow(unused_variables, dead_code, unused_imports)]
 
 use derivative::Derivative;
+use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::fmt::{Debug, Display};
 use std::sync::{Arc, Mutex, RwLock};
 
@@ -41,9 +43,9 @@ struct Node<T> {
     children: Vec<ItemPtr>,
 }
 
-impl<'a, T> Node<T>
+impl<T> Node<T>
 where
-    T: Deserialize<'a> + Serialize + Ord + Clone + Copy,
+    T: DeserializeOwned + Serialize + Ord + Clone + Copy,
 {
     pub fn encode(self) -> Option<Vec<u8>> {
         let item = bincode::serialize(&self);
@@ -53,8 +55,9 @@ where
         }
     }
 
-    pub fn decode(bytes: &'a Vec<u8>) -> Option<Self> {
-        let page = bincode::deserialize(&bytes[..]);
+    pub fn decode(bytes: &Vec<u8>) -> Option<Self> {
+        let owned = bytes.clone().to_owned();
+        let page = bincode::deserialize(&owned[..]);
         match page {
             Ok(page) => Some(page),
             Err(_) => None,
@@ -85,6 +88,10 @@ where
         let mut node_buf = [0u8; 512];
         node_buf[..std::mem::size_of_val(&*bytes)].copy_from_slice(&bytes);
         node_buf
+    }
+
+    pub fn from_buffer(bytes: &[u8; 512]) -> Node<T> {
+        Node::<T>::decode(&bytes.to_vec()).unwrap()
     }
 }
 
@@ -126,7 +133,6 @@ fn main() {
 
     let raw: [u8; 512] = test_node.into_buffer();
     println!("{:#?}", raw);
-    let raw_bytes: Vec<u8> = Vec::from(raw);
-    let raw_decoded = Node::<u32>::decode(&raw_bytes).unwrap();
+    let raw_decoded = Node::<u32>::from_buffer(&raw);
     println!("RAW DECODED: {}", raw_decoded);
 }
